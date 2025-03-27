@@ -35,6 +35,10 @@ df = pd.read_excel("century.xlsx", sheet_name = 'price')
 vol = df["Volatility"].values[1:]
 N = len(vol)
 L = 9
+plt.plot(range(1928, 1928 + N), vol)
+plt.title('Annual Volatility')
+plt.savefig('vol.png')
+plt.close()
 price = df['Price'].values
 dividend = df['Dividends'].values[1:]
 dfEarnings = pd.read_excel('century.xlsx', sheet_name = 'earnings')
@@ -53,6 +57,7 @@ if inflMode == 'Real':
     div = cpi[-1]*dividend/cpi[L+1:]
     total = np.array([np.log(index[k+1] + div[k]) - np.log(index[k]) for k in range(N)])
     earn = cpi[-1]*earnings/cpi
+    
 Nprice = np.diff(np.log(index))/vol
 Ntotal = total/vol
 growth = np.diff(np.log(earn))[L:]
@@ -66,18 +71,29 @@ lvol = np.log(vol)
 RegVol = stats.linregress(lvol[:-1], lvol[1:])
 betaVol = RegVol.slope
 alphaVol = RegVol.intercept
-residVol = [lvol[k+1] - betaVol * lvol[k] - alphaVol for k in range(N-1)]
+print('Autoregression for log volatility')
+print('Slope = ', betaVol, ' Intercept = ', alphaVol)
+residVol = np.array([lvol[k+1] - betaVol * lvol[k] - alphaVol for k in range(N-1)])
+plots(residVol, 'Volatility')
+print(analysis(residVol, 'Volatility'))
 meanVol = np.mean(vol)
 spreads = {}
 spreads['BAA-AAA'] = (df['BAA'] - df['AAA']).values
 spreads['AAA-Long'] = (df['AAA'] - df['Long']).values
 spreads['Long-Short'] = (df['Long'] - df['Short']).values
+for key in spreads:
+    plt.plot(range(1928, 1929 + N), spreads[key], label = key)
+plt.title('Bond Spreads')
+plt.legend(bbox_to_anchor=(0.05, 0.95), loc='upper left')
+plt.savefig('allrates.png')
+plt.close()
+
 DFreg = pd.DataFrame({'const' : 1/vol, 'vol' : 1})
 for key in spreads:
     DFreg[key] = spreads[key][:-1]/vol
 
 for key in spreads:
-    print('Regression of', key)
+    print('\n\n Regression of', key, '\n\n')
     Reg = OLS(list(np.diff(spreads[key])/vol), DFreg).fit()
     print(Reg.summary())
     resid = Reg.resid
@@ -85,8 +101,8 @@ for key in spreads:
     print(analysis(resid, key))
     
 nrets = {'price' : Nprice, 'total' : Ntotal}
-RegGrowth = OLS(growth, DFreg).fit()
-print('Earnings Growth')
+RegGrowth = OLS(growth/vol, DFreg).fit()
+print('\n\n Earnings Growth\n\n ')
 print(RegGrowth.summary())
 resgrowth = RegGrowth.resid
 plots(resgrowth, 'Growth')
@@ -95,7 +111,7 @@ DFfull = DFreg
 DFfull['EarningsYield'] = np.log(earnyield[:-1])/vol
 
 for key in nrets:
-    print('Regression for Returns', key, '\n\n')
+    print('\n\n Regression for Returns', key, '\n\n')
     returns = nrets[key]
     Regression = OLS(returns, DFfull).fit()
     print(Regression.summary())
