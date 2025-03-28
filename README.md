@@ -7,4 +7,6 @@ We add Parts I, II and modify part III of a previous blog post: https://my-finan
 
 Update: Added simulator.py for the simulator using log trailing earnings yield and three spreads. It is discussed in the same post https://my-finance.org/2025/03/27/sp-returns-vs-bond-spreads-and-trailing-earnings-yield-with-volatility/
 
-Update: Added rates-only.py for fitting the returns (price/total, nominal/real). Here, we remove earnings yield (classic or trailing version, original or logarithmic value). We model these returns only using the three spreads. See the blog post https://my-finance.org/2025/03/28/sp-returns-vs-3-spreads-with-volatility/
+Update: Added rates-only.py for fitting the returns (price/total, nominal/real). Here, we remove earnings yield (classic or trailing version, original or logarithmic value). We model these returns only using the three spreads and volatility. See the blog post https://my-finance.org/2025/03/28/sp-returns-vs-3-spreads-with-volatility/
+
+Update: Added rates-only-sim.py as the simulator for only three bond spreads and volatility. See the same blog post.
