@@ -116,7 +116,6 @@ if residMode == 'Gauss':
 if residMode == 'KDE':
     innov = KDE(allResids, horizon)
 
-simRet = []
 simLVol = [np.log(initial['Volatility'])]
 for t in range(horizon):
     simLVol.append(simLVol[-1]*betaVol + alphaVol + innov[0, t])
@@ -135,24 +134,17 @@ for t in range(horizon):
         simFactors[key].append((allModels[key].predict(currentSpreadFactors)[0] + currentInnov[key]) * simVol[t+1])
     simPriceRet.append((allModels['Price'].predict(currentSpreadFactors)[0] + innov[4, t]) * simVol[t+1])
     simTotalRet.append((allModels['Total'].predict(currentSpreadFactors)[0] + innov[5, t]) * simVol[t+1])
+simPrice = np.exp(np.append(np.array([0]), np.cumsum(simPriceRet)))
+simTotal = np.exp(np.append(np.array([0]), np.cumsum(simTotalRet)))
 for key in simFactors:
     plt.plot(simFactors[key], label = key)
 plt.title('Spreads')
 plt.legend()
 plt.show()
-
 plt.plot(simVol)
+plt.title('Simulated Volatility')
 plt.show()
-
-simPrice = np.exp(np.append(np.array([0]), np.cumsum(simPriceRet)))
-simTotal = np.exp(np.append(np.array([0]), np.cumsum(simTotalRet)))
-print('Price Returns = ', simPriceRet)
-print('Total Returns = ', simTotalRet)
-print('Price Level = ', simPrice)
-print('Total Level = ', simTotal)
-
 plt.plot(simPrice)
-plt.show()
-
 plt.plot(simTotal)
+plt.title('Simulated Price and Wealth')
 plt.show()
