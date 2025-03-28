@@ -3,4 +3,6 @@ Simulation of stock index annual returns (nominal/real, price/total) based on tr
 
 We add Parts I, II and modify part III of a previous blog post: https://my-finance.org/2025/03/19/earnings-yield-3-bond-spreads-annual-returns/ in our new code. We have only one Python file, as opposed to the three Python files in the repository 3spreads-1yearnyield-returns corresponding to Parts I, II, III of that previous post.
 
+Update: Added simulator.py for the simulator using log trailing earnings yield and three spreads. 
+
 Update: Added rates-only.py for fitting the returns (price/total, nominal/real). Here, we remove earnings yield (classic or trailing version, original or logarithmic value). We model these returns only using the three spreads.
